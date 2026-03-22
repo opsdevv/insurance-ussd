@@ -1,0 +1,126 @@
+{
+  "info": {
+    "name": "USSD Insurance Claims Samples",
+    "description": "Sample Africa's Talking USSD payloads for local testing.",
+    "_postman_id": "4d4a8d8a-57fc-4f56-a1ac-c89b9374f4f5",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Main Menu",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/ussd",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["ussd"]
+        },
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "sessionId", "value": "ATUid_test_001", "type": "text" },
+            { "key": "serviceCode", "value": "*123#", "type": "text" },
+            { "key": "phoneNumber", "value": "+26771234567", "type": "text" },
+            { "key": "text", "value": "", "type": "text" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "File Claim - Final Step",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/ussd",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["ussd"]
+        },
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "sessionId", "value": "ATUid_test_002", "type": "text" },
+            { "key": "serviceCode", "value": "*123#", "type": "text" },
+            { "key": "phoneNumber", "value": "+26771234567", "type": "text" },
+            {
+              "key": "text",
+              "value": "1*2*MTR_7789*2026-03-20*Minor collision on highway",
+              "type": "text"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Check Claim Status",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/ussd",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["ussd"]
+        },
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "sessionId", "value": "ATUid_test_003", "type": "text" },
+            { "key": "serviceCode", "value": "*123#", "type": "text" },
+            { "key": "phoneNumber", "value": "+26771234567", "type": "text" },
+            { "key": "text", "value": "2*CLM1710000000000", "type": "text" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Policy Info",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/ussd",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["ussd"]
+        },
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "sessionId", "value": "ATUid_test_004", "type": "text" },
+            { "key": "serviceCode", "value": "*123#", "type": "text" },
+            { "key": "phoneNumber", "value": "+26771234567", "type": "text" },
+            { "key": "text", "value": "3*POL_55001", "type": "text" }
+          ]
+        }
+      }
+    }
+  ]
+}
