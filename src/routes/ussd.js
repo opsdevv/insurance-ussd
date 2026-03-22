@@ -146,16 +146,88 @@ async function handlePolicyInfo(steps) {
   return end(`Policy: ${policy.policy_number}\nType: ${policy.type}`);
 }
 
-router.post("/", async (req, res) => {
-  const { sessionId, serviceCode, phoneNumber } = req.body;
-  const text = typeof req.body.text === "string" ? req.body.text : "";
+async function handleUssdRequest(payload, res, requestMethod) {
+  const { sessionId, serviceCode, phoneNumber } = payload || {};
+  const text = typeof (payload || {}).text === "string" ? payload.text : "";
+
+  // #region agent log
+  fetch("http://127.0.0.1:7823/ingest/ea59d108-0aa6-41c6-94f2-3101e6c1c433", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Debug-Session-Id": "59f53b",
+    },
+    body: JSON.stringify({
+      sessionId: "59f53b",
+      runId: "pre-fix-1",
+      hypothesisId: "H2_H3",
+      location: "src/routes/ussd.js:153",
+      message: "Entered POST /ussd handler",
+      data: {
+        requestMethod,
+        hasSessionId: Boolean(sessionId),
+        hasServiceCode: Boolean(serviceCode),
+        hasPhoneNumber: Boolean(phoneNumber),
+        textLength: text.length,
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
 
   if (!sessionId || !serviceCode || !phoneNumber) {
-    return res.status(400).send(end("Invalid request payload."));
+    // #region agent log
+    fetch("http://127.0.0.1:7823/ingest/ea59d108-0aa6-41c6-94f2-3101e6c1c433", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Debug-Session-Id": "59f53b",
+      },
+      body: JSON.stringify({
+        sessionId: "59f53b",
+        runId: "pre-fix-1",
+        hypothesisId: "H2_H3",
+        location: "src/routes/ussd.js:174",
+        message: "Rejected payload due to missing required fields",
+        data: {
+        requestMethod,
+          hasSessionId: Boolean(sessionId),
+          hasServiceCode: Boolean(serviceCode),
+          hasPhoneNumber: Boolean(phoneNumber),
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+    // Always return 200 with END/CON for USSD gateways.
+    return res.send(end("Invalid request payload."));
   }
 
   const steps = toSteps(text);
   const selectedMenu = steps[0];
+
+  // #region agent log
+  fetch("http://127.0.0.1:7823/ingest/ea59d108-0aa6-41c6-94f2-3101e6c1c433", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Debug-Session-Id": "59f53b",
+    },
+    body: JSON.stringify({
+      sessionId: "59f53b",
+      runId: "pre-fix-1",
+      hypothesisId: "H5",
+      location: "src/routes/ussd.js:198",
+      message: "Parsed USSD steps",
+      data: {
+        requestMethod,
+        selectedMenu: selectedMenu || null,
+        stepsCount: steps.length,
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
 
   try {
     if (!selectedMenu) {
@@ -177,8 +249,59 @@ router.post("/", async (req, res) => {
     return res.send(end("Invalid selection."));
   } catch (error) {
     console.error("USSD processing error:", error);
+    // #region agent log
+    fetch("http://127.0.0.1:7823/ingest/ea59d108-0aa6-41c6-94f2-3101e6c1c433", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Debug-Session-Id": "59f53b",
+      },
+      body: JSON.stringify({
+        sessionId: "59f53b",
+        runId: "pre-fix-1",
+        hypothesisId: "H4",
+        location: "src/routes/ussd.js:238",
+        message: "Exception while processing USSD request",
+        data: {
+          requestMethod,
+          errorMessage: error && error.message ? error.message : "unknown",
+          selectedMenu: selectedMenu || null,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
     return res.send(end("An error occurred. Please try again."));
   }
+}
+
+router.post("/", async (req, res) => {
+  return handleUssdRequest(req.body, res, "POST");
+});
+
+router.get("/", async (req, res) => {
+  // #region agent log
+  fetch("http://127.0.0.1:7823/ingest/ea59d108-0aa6-41c6-94f2-3101e6c1c433", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Debug-Session-Id": "59f53b",
+    },
+    body: JSON.stringify({
+      sessionId: "59f53b",
+      runId: "post-fix-1",
+      hypothesisId: "H1",
+      location: "src/routes/ussd.js:279",
+      message: "Entered GET /ussd handler",
+      data: {
+        queryKeys: req.query ? Object.keys(req.query) : [],
+      },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
+
+  return handleUssdRequest(req.query, res, "GET");
 });
 
 module.exports = router;
